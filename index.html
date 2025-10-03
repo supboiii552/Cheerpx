@@ -5,15 +5,20 @@
 <title>CheerpX Browser VM</title>
 <script src="https://cdn.jsdelivr.net/npm/@leaningtech/cheerpx@1.0.0/dist/cheerpx.min.js"></script>
 <style>
-  body { font-family: monospace; background: #111; color: #0f0; margin: 0; }
-  #console { padding: 10px; height: 80vh; overflow-y: scroll; white-space: pre-wrap; background: #000; }
-  button { margin: 10px; padding: 8px 16px; }
+  body { font-family: monospace; background: #111; color: #0f0; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+  header { padding: 10px; background: #222; display: flex; justify-content: space-between; align-items: center; }
+  #console { flex: 1; padding: 10px; overflow-y: auto; white-space: pre-wrap; background: #000; }
+  button { padding: 6px 12px; font-size: 14px; cursor: pointer; background: #4CAF50; border: none; border-radius: 5px; color: #fff; }
+  button:hover { background: #45a049; }
 </style>
 </head>
 <body>
 
-<h2>CheerpX Browser VM</h2>
-<button id="start">Start VM</button>
+<header>
+  <span>CheerpX Browser VM</span>
+  <button id="start">Start VM</button>
+</header>
+
 <pre id="console">Press "Start VM" to launch the VM...</pre>
 
 <script>
@@ -25,7 +30,6 @@ document.getElementById("start").addEventListener("click", async () => {
     await cx.initialize();
 
     cx.setConsole(consoleEl);
-
     consoleEl.textContent += "VM ready!\n";
 
     // Launch bash shell

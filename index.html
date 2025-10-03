@@ -2,45 +2,70 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>CheerpX Browser VM</title>
+<title>CheerpX Browser VM with Log</title>
 <script src="https://cdn.jsdelivr.net/npm/@leaningtech/cheerpx@1.0.0/dist/cheerpx.min.js"></script>
 <style>
   body { font-family: monospace; background: #111; color: #0f0; margin: 0; display: flex; flex-direction: column; height: 100vh; }
   header { padding: 10px; background: #222; display: flex; justify-content: space-between; align-items: center; }
   #console { flex: 1; padding: 10px; overflow-y: auto; white-space: pre-wrap; background: #000; }
-  button { padding: 6px 12px; font-size: 14px; cursor: pointer; background: #4CAF50; border: none; border-radius: 5px; color: #fff; }
+  button { padding: 6px 12px; font-size: 14px; cursor: pointer; background: #4CAF50; border: none; border-radius: 5px; color: #fff; margin-left:5px; }
   button:hover { background: #45a049; }
+  #logPanel { display:none; background:#333; color:#0f0; padding:10px; font-size:12px; max-height:100px; overflow-y:auto; border-top:2px solid #4CAF50; }
 </style>
 </head>
 <body>
 
 <header>
   <span>CheerpX Browser VM</span>
-  <button id="start">Start VM</button>
+  <div>
+    <button id="start">Start VM</button>
+    <button id="toggleLog">Show Log</button>
+  </div>
 </header>
 
+<div id="logPanel"></div>
 <pre id="console">Press "Start VM" to launch the VM...</pre>
 
 <script>
-document.getElementById("start").addEventListener("click", async () => {
-    const consoleEl = document.getElementById("console");
-    consoleEl.textContent = "Initializing VM...\n";
+const logPanel = document.getElementById("logPanel");
+const consoleEl = document.getElementById("console");
 
-    const cx = new CheerpX();
+function log(msg) {
+  logPanel.textContent += msg + "\n";
+  logPanel.scrollTop = logPanel.scrollHeight;
+}
+
+document.getElementById("toggleLog").addEventListener("click", () => {
+  logPanel.style.display = logPanel.style.display === "none" ? "block" : "none";
+});
+
+document.getElementById("start").addEventListener("click", async () => {
+  consoleEl.textContent = "Initializing VM...\n";
+  log("Clicked Start VM");
+
+  const cx = new CheerpX();
+  try {
+    log("Creating CheerpX instance...");
     await cx.initialize();
+    log("CheerpX initialized");
 
     cx.setConsole(consoleEl);
     consoleEl.textContent += "VM ready!\n";
 
-    // Launch bash shell
+    log("Launching bash shell...");
     await cx.run("/bin/bash", ["--login"], {
-        env: [
-            "HOME=/home/user",
-            "USER=user",
-            "SHELL=/bin/bash",
-            "EDITOR=vim",
-        ],
+      env: [
+        "HOME=/home/user",
+        "USER=user",
+        "SHELL=/bin/bash",
+        "EDITOR=vim",
+      ],
     });
+    log("Shell launched successfully");
+  } catch (e) {
+    log("Error: " + e);
+    consoleEl.textContent += "\nError: " + e;
+  }
 });
 </script>
 
